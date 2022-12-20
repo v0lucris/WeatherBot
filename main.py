@@ -5,9 +5,9 @@ from geopy import geocoders
 from os import environ
 
 
-token = environ['5972865769:AAHeF-ZEmh5blx73ts5e2tqIY-UMWXHFW8s']
-token_accu = environ['H90U3ajs1Ax5Qgb9XNuKjY4bsUozsBch']
-token_yandex = environ['636904a0-f4b6-499c-a36b-ba6596fca1e6']
+token = environ['token_bot']
+token_accu = environ['token_accu']
+token_yandex = environ['token_yandex']
 
 # получаем код города
 def code_location(latitude: str, longitude: str, token_accu: str):
