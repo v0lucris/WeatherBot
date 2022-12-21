@@ -4,6 +4,10 @@ import requests as req
 from geopy import geocoders
 import os
 import dotenv
+import urllib3
+
+
+urllib3.disable_warnings()
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
@@ -14,9 +18,7 @@ if os.path.exists(dotenv_path):
 token = dotenv.get_key(dotenv_path, 'token')
 token_accu = dotenv.get_key(dotenv_path, 'token_accu')
 token_yandex = dotenv.get_key(dotenv_path, 'token_yandex')
-print(token)
-print(token_accu)
-print(token_yandex)
+cities = os.path.dirname(__file__) + '\cities.json'
 
 # получаем код города
 def code_location(latitude: str, longitude: str, token_accu: str):
@@ -93,6 +95,7 @@ def yandex_weather(latitude, longitude, token_yandex: str):
                 'se': 'юго-восточное', 's': 'южное', 'sw': 'юго-западное', 'w': 'западное', 'с': 'штиль'}
 
     yandex_json = json.loads(yandex_req.text)
+    print(f'Ответ от яндекса: {yandex_req.text}')
     yandex_json['fact']['condition'] = conditions[yandex_json['fact']['condition']]
     yandex_json['fact']['wind_dir'] = wind_dir[yandex_json['fact']['wind_dir']]
     for parts in yandex_json['forecast']['parts']:
@@ -117,11 +120,12 @@ def yandex_weather(latitude, longitude, token_yandex: str):
 
 # функция сохранения городов:
 def add_city(message):
+    
     try:
         latitude, longitude = geo_pos(message.text.lower().split('город ')[1])
         global cities
         cities[message.from_user.id] = message.text.lower().split('город ')[1]
-        with open('cities.json', 'w') as f:
+        with open(cities, 'w') as f:
             f.write(json.dumps(cities))
         return cities, 0
     except Exception as err:
@@ -130,7 +134,7 @@ def add_city(message):
 # записать программу
 bot = telebot.TeleBot(token)
 
-with open('cities.json', encoding='utf-8') as f:
+with open(cities, encoding='utf-8') as f:
     cities = json.load(f)
 
 # функции ответа на сообщения:
