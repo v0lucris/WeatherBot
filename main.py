@@ -2,12 +2,21 @@ import json
 import telebot
 import requests as req
 from geopy import geocoders
-from os import environ
+import os
+import dotenv
+
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    dotenv.load_dotenv(dotenv_path)
 
 
-token = environ['token_bot']
-token_accu = environ['token_accu']
-token_yandex = environ['token_yandex']
+
+token = dotenv.get_key(dotenv_path, 'token')
+token_accu = dotenv.get_key(dotenv_path, 'token_accu')
+token_yandex = dotenv.get_key(dotenv_path, 'token_yandex')
+print(token)
+print(token_accu)
+print(token_yandex)
 
 # получаем код города
 def code_location(latitude: str, longitude: str, token_accu: str):
