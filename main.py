@@ -6,19 +6,17 @@ import os
 import dotenv
 import urllib3
 
-
 urllib3.disable_warnings()
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     dotenv.load_dotenv(dotenv_path)
 
-
-
 token = dotenv.get_key(dotenv_path, 'token')
 token_accu = dotenv.get_key(dotenv_path, 'token_accu')
 token_yandex = dotenv.get_key(dotenv_path, 'token_yandex')
-cities = os.path.dirname(__file__) + '\cities.json'
+cities = os.path.dirname(__file__) + './cities.json'
+
 
 # получаем код города
 def code_location(latitude: str, longitude: str, token_accu: str):
@@ -28,6 +26,7 @@ def code_location(latitude: str, longitude: str, token_accu: str):
     json_data = json.loads(resp_loc.text)
     code = json_data['Key']
     return code
+
 
 # код получения непосредственно прогноза:
 def weather(code_loc: str, token_accu: str):
@@ -44,19 +43,20 @@ def weather(code_loc: str, token_accu: str):
         dict_weather[time] = {'temp': json_data[i]['Temperature']['Value'], 'sky': json_data[i]['IconPhrase']}
     return dict_weather
 
+
 # функции которые будут отправлять ответом прогнозы
 def print_weather(dict_weather, message):
-    bot.send_message(message.from_user.id, f'Разрешите доложить, Ваше сиятельство!'
-                                           f' Температура сейчас {dict_weather["сейчас"]["temp"]}!'
-                                           f' А на небе {dict_weather["сейчас"]["sky"]}.'
-                                           f' Температура через три часа {dict_weather["через3ч"]["temp"]}!'
-                                           f' А на небе {dict_weather["через3ч"]["sky"]}.'
-                                           f' Температура через шесть часов {dict_weather["через6ч"]["temp"]}!'
-                                           f' А на небе {dict_weather["через6ч"]["sky"]}.'
-                                           f' Температура через девять часов {dict_weather["через9ч"]["temp"]}!'
-                                           f' А на небе {dict_weather["через9ч"]["sky"]}.')
-    bot.send_message(message.from_user.id, f' А здесь ссылка на подробности '
-                                           f'{dict_weather["link"]}')
+    bot.send_message(message.from_user.id, f'Разрешите доложить, Ваше сиятельство!\n'
+                                           f' Температура сейчас {dict_weather["сейчас"]["temp"]}!\n'
+                                           f' А на небе {dict_weather["сейчас"]["sky"]}.\n'
+                                           f' Температура через три часа {dict_weather["через3ч"]["temp"]}!\n'
+                                           f' А на небе {dict_weather["через3ч"]["sky"]}.\n'
+                                           f' Температура через шесть часов {dict_weather["через6ч"]["temp"]}!\n'
+                                           f' А на небе {dict_weather["через6ч"]["sky"]}.\n'
+                                           f' Температура через девять часов {dict_weather["через9ч"]["temp"]}!\n'
+                                           f' А на небе {dict_weather["через9ч"]["sky"]}.\n')
+    bot.send_message(message.from_user.id, f' А здесь ссылка на подробности \n'
+                                           f'{dict_weather["link"]}\n')
 
 
 # сообщение с погодой от яндекса
@@ -72,12 +72,14 @@ def print_yandex_weather(dict_weather_yandex, message):
     bot.send_message(message.from_user.id, f' А здесь ссылка на подробности '
                                            f'{dict_weather_yandex["link"]}')
 
+
 # функция получения координат через библиотеку geopy
 def geo_pos(city: str):
     geolocator = geocoders.Nominatim(user_agent="telebot")
     latitude = str(geolocator.geocode(city).latitude)
     longitude = str(geolocator.geocode(city).longitude)
     return latitude, longitude
+
 
 # нужно получить погоду от яндекса
 def yandex_weather(latitude, longitude, token_yandex: str):
@@ -118,9 +120,9 @@ def yandex_weather(latitude, longitude, token_yandex: str):
     weather['link'] = yandex_json['info']['url']
     return weather
 
+
 # функция сохранения городов:
 def add_city(message):
-    
     try:
         latitude, longitude = geo_pos(message.text.lower().split('город ')[1])
         global cities
@@ -131,11 +133,13 @@ def add_city(message):
     except Exception as err:
         return cities, 1
 
+
 # записать программу
 bot = telebot.TeleBot(token)
 
 with open(cities, encoding='utf-8') as f:
     cities = json.load(f)
+
 
 # функции ответа на сообщения:
 @bot.message_handler(command=['start', 'help'])
