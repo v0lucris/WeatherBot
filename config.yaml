@@ -1,0 +1,5 @@
+path:
+  root_dir: "./"
+  config_dir: "./config"
+  db_dir: "./db"
+vars:
